@@ -1,0 +1,242 @@
+let allIssues = [];
+
+// catch the issueCardContainer
+const issueCardContainer = document.getElementById("issueCardContainer")
+// catch the totalIssuesCount
+let totalIssuesCount = document.getElementById("totalIssuesCount")
+
+// catch loader 
+const loader = document.getElementById("loader")
+
+// catch the modal details
+const issueDetailsModal = document.getElementById("issueDetailsModal")
+const modalTitle = document.getElementById("modalTitle")
+const modalDescription = document.getElementById("modalDescription")
+const modalAuthor = document.getElementById("modalAuthor")
+const modalDate = document.getElementById("modalDate")
+const modalLabels = document.getElementById("modalLabels")
+const modalStatus = document.getElementById("modalStatus")
+const modalAssignee = document.getElementById("modalAssignee")
+const modalPriority = document.getElementById("modalPriority")
+
+// catch searchInput
+const searchInput = document.getElementById("searchInput")
+
+
+// catch buttons
+const allFilterBtn = document.getElementById("allFilterBtn")
+const openFilterBtn = document.getElementById("openFilterBtn")
+const closedFilterBtn = document.getElementById("closedFilterBtn")
+
+
+// showLoader
+function showLoader(){
+ loader.classList.remove("hidden")
+}
+
+// hideLoader
+function hideLoader(){
+ loader.classList.add("hidden")
+}
+
+// button activeness
+function activeButton(btn){
+  openFilterBtn.classList.remove("btn-primary")
+  allFilterBtn.classList.remove("btn-primary")
+  closedFilterBtn.classList.remove("btn-primary")
+
+  // add the class to the clicked btn
+  btn.classList.add("btn-primary")
+}
+
+// loadIssues
+async function loadIssues(){
+  // show the loader
+    showLoader()
+    const res = await fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
+    const data = await res.json()
+    allIssues = data.data;
+    // hideLoader()
+    hideLoader();
+    // console.log(allIssues, "allissues");
+    displayIssues(allIssues)
+}
+
+// loadIssueDetails
+async function loadIssueDetails(id){
+  showLoader()
+
+  const res = await fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
+  const data = await res.json()
+
+  const issue = data.data
+
+  modalTitle.innerText = issue.title
+  modalDescription.innerText = issue.description
+  modalAuthor.innerText = "Opened by " + issue.author
+  modalDate.innerText = new Date(issue.createdAt).toLocaleString()
+  modalAssignee.innerText = issue.assignee ? `Assignee: 
+  ${issue.assignee}` : "Assignee: Not Assigned";
+  modalPriority.innerText = `Priority: ${issue.priority}`;
+
+  // remove color
+  modalPriority.classList.remove("bg-red-500","bg-yellow-400","bg-gray-400")
+
+    // add color based on 
+  if(issue.priority === "high"){
+    modalPriority.classList.add("bg-red-500")
+  }
+  else if(issue.priority === "medium"){
+    modalPriority.classList.add("bg-yellow-400")
+  }
+  else{
+    modalPriority.classList.add("bg-gray-400")
+  }
+
+  // status
+  modalStatus.innerText = issue.status
+  const isOpen = issue.status === "open"
+  modalStatus.classList.add(isOpen ? "bg-green-500" : "bg-red-500")
+  modalStatus.classList.remove(isOpen ? "bg-red-500" : "bg-green-500")
+
+  // labels
+  modalLabels.innerHTML = `
+    ${issue.labels.map(label => `
+      <span class="px-3 py-1 rounded-full text-sm font-medium uppercase ${
+        label === 'bug' ? 'bg-red-200 text-red-800' :
+        label === 'help wanted' ? 'bg-yellow-200 text-yellow-800' :
+        label === 'enhancement' ? 'bg-green-200 text-green-800' :
+        label === 'good first issue' ? 'bg-purple-200 text-purple-800' :
+        label === 'documentation' ? 'bg-blue-200 text-blue-800' :
+        'bg-gray-200 text-gray-800'
+      }">${label}</span>
+    `).join('')}
+  `
+
+  hideLoader()
+
+  issueDetailsModal.showModal()
+}
+
+// displayIssues
+async function displayIssues(issues){
+  issueCardContainer.innerHTML = ""; // clear previous cards
+    issues.forEach(issue =>{
+        // console.log(issue);
+        // foermate date
+        const formattedDate = new Date(issue.createdAt).toLocaleDateString('en-US');
+
+        // card create
+        const card = document.createElement("div")
+        card.innerHTML = `
+             <div class="card bg-base-100 shadow-sm border-t-4 ${issue.status === 'open' ? 'border-green-400' : 'border-purple-400'} flex flex-col h-full cursor-pointer">
+  <div class="card-body">
+    <div class="flex items-center justify-between">
+        <img class="w-[30px]" 
+     src="${issue.status === 'open' ? './assets/Open-Status.png' : './assets/closed-status.png'}" 
+     alt="${issue.status === 'open' ? 'Open' : 'Closed'}">
+    <div class="badge px-6 py-4 rounded-4xl font-medium text-red-800 uppercase ${issue.priority === 'high' ? 'bg-[#FECACA] text-[#EF4444]' : issue.priority === 'medium' ? 'bg-[#FFF6D1] text-[#FF59E0B]' : 'bg-[#9CA3AF] text-gray-400'}">${issue.priority}</div>
+    </div>
+
+    <!-- cart title -->
+     <h3 class="text-[#1F2937] text-lg font-semibold capitalize">${issue.title}</h3>
+     <p class="text-[#64748B] text-lg line-clamp-2">${issue.description}</p>
+
+     <!-- labels -->
+      <div class="flex gap-2 flex-wrap">
+        ${issue.labels.map(label => 
+          `<span class="px-3 py-1 rounded-full text-sm font-medium uppercase ${
+            label === 'bug' ? 'bg-red-200 text-red-800' :
+            label === 'help wanted' ? 'bg-yellow-200 text-yellow-800' :
+            label === 'enhancement' ? 'bg-green-200 text-green-800' :
+            label === 'good first issue' ? 'bg-purple-200 text-purple-800' :
+            label === 'documentation' ? 'bg-blue-200 text-blue-800' :
+            'bg-gray-200 text-gray-800'
+          }">${label}</span>`
+        ).join('')}
+      </div>
+        <hr class="text-gray-300 my-4">
+    <!-- footer -->
+    <div class="">
+        <p class="text-[#64748B] text-lg">#${issue.id} by <span>${issue.author}</span></p>
+        <p class="text-[#64748B] text-lg">${formattedDate}</p>
+    </div>
+  </div>
+</div>
+        `
+
+        // add event listener on the card
+        card.addEventListener("click", ()=>{
+         
+          loadIssueDetails(issue.id)
+          
+})
+
+        issueCardContainer.appendChild(card)
+    })
+}
+
+// all filter btn 
+allFilterBtn.addEventListener("click", ()=>{
+  activeButton(allFilterBtn)
+  // showLoader
+  showLoader();
+  // show the all issues
+  displayIssues(allIssues)
+  // hide
+  hideLoader()
+
+  // total issue count update
+  totalIssuesCount.innerText = `${allIssues.length} Issues`;
+
+})
+
+// open filter btn
+openFilterBtn.addEventListener("click", () => {
+    activeButton(openFilterBtn);
+  // show loader 
+  showLoader()
+  
+  // // empty the issueCardContainer
+  // issueCardContainer.innerHTML = " ";
+
+  // filter the issues from the all issues and show only the open issues
+  const openIssues = allIssues.filter(issue => issue.status === "open");
+  displayIssues(openIssues)
+  // hide loader
+  hideLoader()
+  // console.log(openIssues);
+  // totalIssues count update
+  totalIssuesCount.innerText = `${openIssues.length} Issues`;
+})
+
+// closed filter btn
+closedFilterBtn.addEventListener("click", ()=> {
+  activeButton(closedFilterBtn)
+  // filter the issues from the all issues and show only the closed issues
+  const closedIssues = allIssues.filter(issue => issue.status === "closed");
+  // console.log(closedIssues);
+  displayIssues(closedIssues)
+
+   // total issue count update
+  totalIssuesCount.innerText = `${closedIssues.length} Issues`;
+})
+
+// search input event listener
+searchInput.addEventListener("input", ()=>{
+  const searchText = searchInput.value.toLowerCase()
+  // filter the allIssues by searched text
+  const searchFilteredIssues = allIssues.filter(issue=>
+    issue.title.toLowerCase().includes(searchText) || 
+    issue.description.toLowerCase().includes(searchText) ||
+    issue.author.toLowerCase().includes(searchText)
+  )
+  // show search filtered ISSues
+  displayIssues(searchFilteredIssues);
+
+  // // update issue count
+  totalIssuesCount.innerText = `${searchFilteredIssues.length} Issues`;
+})
+
+
+loadIssues()
