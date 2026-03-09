@@ -9,12 +9,13 @@ let was introduced in ES6. It is a better and safer way to declare a variable. T
 const is also introduced in ES6. It is used when we do not want to change the value of a variable. Once we assign a value to a const variable, we cannot change it later. That is why const is usually used for values that should stay fixed.
 
 Example:
-
+```
 var name = "Shafiqul Islam";
 let age = 29;
 const country = "Bangladesh";
 
-age = 30; 
+age = 30;
+```
 Here, age can change because it uses let, but country cannot change because it uses const.
 
 ### 2️⃣ What is the spread operator (...)?
@@ -25,20 +26,22 @@ Many developers use the spread operator to copy arrays, combine arrays, or add n
 For example, if we have one array and we want to create another array using its values, we can use the spread operator.
 
 Example:
-
+```
 const numbers1 = [1, 2, 3];
 const numbers2 = [...numbers1, 4, 5];
 
 console.log(numbers2);
+```
 Here the spread operator copies the values from numbers1 and then adds 4 and 5 to create a new array.
 
 The spread operator is also used with objects.
 
 Example:
-
+```
 const person = { name: "Robi", age: 25 };
 
 const newPerson = { ...person, city: "Dhaka" };
+```
 This creates a new object by copying the old object and adding a new property.
 
 So in simple words, the spread operator helps to copy and expand data easily.
@@ -49,31 +52,33 @@ In JavaScript, map(), filter(), and forEach() are array methods. They are used t
 forEach() is used when we want to run a function for every element in the array. It simply goes through each item one by one and runs the function. But it does not return a new array.
 
 Example:
-
+```
 const numbers = [1, 2, 3];
 
 numbers.forEach(function(num){
   console.log(num);
 });
+```
 This will just print each number.
 
 map() is similar to forEach(), but the difference is that map() returns a new array. It is usually used when we want to change the values of an array and store the result in another array.
 
 Example:
-
+```
 const numbers = [1, 2, 3];
 
 const doubled = numbers.map(function(num){
   return num * 2;
 });
 
-console.log(doubled);
+console.log(doubled)
+```
 Here map() creates a new array with doubled values.
 
 filter() is used when we want to select some items from an array based on a condition. It checks each element and keeps only the elements that match the condition.
 
 Example:
-
+```
 const numbers = [1,2,3,4,5];
 
 const bigNumbers = numbers.filter(function(num){
@@ -81,6 +86,7 @@ const bigNumbers = numbers.filter(function(num){
 });
 
 console.log(bigNumbers);
+```
 Here filter() returns only the numbers greater than 3.
 
 So simply:
@@ -92,18 +98,21 @@ filter() → creates a new array with selected values
 An arrow function is a shorter way to write a function in JavaScript. It was introduced in ES6. It helps developers write cleaner and shorter code.
 
 Normally, a function is written like this:
-
+```
 function add(a, b) {
   return a + b;
 }
+```
 The same function can be written using an arrow function like this:
-
+```
 const add = (a, b) => {
   return a + b;
 };
+```
 If the function has only one line, we can make it even shorter.
-
+```
 const add = (a, b) => a + b;
+```
 Arrow functions are commonly used in modern JavaScript, especially with array methods like map(), filter(), and forEach().
 
 So in simple words, an arrow function is just a short and modern way to write functions.
@@ -114,18 +123,20 @@ Template literals are used to create strings in JavaScript in an easier way. The
 One big advantage of template literals is that we can easily add variables inside a string using ${}.
 
 Example:
-
+```
 const name = "Shafiq";
 const age = 25;
 
 const message = `My name is ${name} and I am ${age} years old.`;
 
 console.log(message);
+```
 In this example, the values of name and age are inserted directly inside the string.
 
 Before template literals, developers had to use string concatenation like this:
-
+```
 "My name is " + name + " and I am " + age + " years old."
+```
 Template literals make the code cleaner and easier to read.
 
 So in simple words, template literals help us write strings with variables in a simple and readable way.
